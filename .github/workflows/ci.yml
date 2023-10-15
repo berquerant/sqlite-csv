@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install sqlite3
-        run: apt install -y sqlite3
+        run: sudo apt install -y sqlite3
       - name: Set up Python 3.12
         uses: actions/setup-python@v4
         with:
