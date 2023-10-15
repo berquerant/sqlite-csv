@@ -26,7 +26,7 @@ jobs:
           python-version: "3.12"
           cache: "pipenv"
       - name: Install pipenv
-        run: curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python
+        run: pip install pipenv
       - name: Sync
         run: pipenv sync --dev
       - name: Test
