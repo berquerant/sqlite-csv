@@ -93,6 +93,15 @@ class SQLiteCSVTest(unittest.TestCase):
         with data.prepare_data():
             cases = [
                 Case(
+                    name="select accounts all without header",
+                    args=[
+                        "--no-headers",
+                        "select * from accounts",
+                        data.account.filename,
+                    ],
+                    want=data.account.data.replace("id,name,address_id", "0,1,2"),
+                ),
+                Case(
                     name="select accounts all",
                     args=["select * from accounts", data.account.filename],
                     want=data.account.data,
