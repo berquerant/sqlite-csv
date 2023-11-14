@@ -1,9 +1,9 @@
-from contextlib import contextmanager
-from tempfile import TemporaryDirectory
-from dataclasses import dataclass
 import os
 import subprocess
 import unittest
+from contextlib import contextmanager
+from dataclasses import dataclass
+from tempfile import TemporaryDirectory
 
 
 class TableData:
@@ -114,7 +114,7 @@ class SQLiteCSVTest(unittest.TestCase):
                     want=data.account.data,
                 ),
                 Case(
-                    name="join accounst and addresses",
+                    name="join accounts and addresses",
                     args=[
                         "select * from accounts inner join addresses on accounts.address_id = addresses.id",
                         data.account.filename,
