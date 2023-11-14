@@ -6,7 +6,7 @@ NAME
   sqlite-csv.sh - sql csv pipeline
 
 SYNOPSIS
-  sqlite-csv.sh [--no-headers] QUERY [FILE]...
+  sqlite-csv.sh [--index-headers] QUERY [FILE]...
 
   QUERY
     query to be executed
@@ -18,7 +18,7 @@ SYNOPSIS
 
 OPTIONS
 
-  --no-headers
+  --index-headers
     rename column names to index (from 0)
 
 ENVIRONMENT VARIABLES
@@ -88,10 +88,10 @@ main() {
         exit 1
     fi
 
-    no_headers=0
-    if [ "$1" = "--no-headers" ] ; then
+    index_headers=0
+    if [ "$1" = "--index-headers" ] ; then
         shift
-        no_headers=1
+        index_headers=1
     fi
 
     database_file="$(mktemp)"
@@ -100,7 +100,7 @@ main() {
 
     for arg in "$@" ; do
         import "${database_file}" "${arg}"
-        if [ "${no_headers}" = "1" ] ; then
+        if [ "${index_headers}" = "1" ] ; then
             rename_columns_to_index "${database_file}" "$(get_tablename $arg)"
         fi
     done

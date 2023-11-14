@@ -95,7 +95,7 @@ class SQLiteCSVTest(unittest.TestCase):
                 Case(
                     name="select accounts all without header",
                     args=[
-                        "--no-headers",
+                        "--index-headers",
                         "select * from accounts",
                         data.account.filename,
                     ],
