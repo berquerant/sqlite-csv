@@ -34,6 +34,9 @@ ENVIRONMENT VARIABLES
 
   SQLITE_CSV_CMD
     sqlite executable, default is sqlite3
+
+  SQLITE_CSV_KEEP_DB
+    if not empty, do not delete sqlite database file
 EOS
 }
 
@@ -98,6 +101,15 @@ rename_tablenames_to_index() {
         while read line ; do "${SQLITE}" "${database_file}" "${line}" ; done
 }
 
+remove_database_file() {
+    database_file="$1"
+    if [ -n "${SQLITE_CSV_KEEP_DB}" ] ; then
+        echo "DB=${database_file}" >&2
+        return
+    fi
+    rm -f "${database_file}"
+}
+
 main() {
     if [ $# -lt 2 ] ; then
         usage
@@ -126,6 +138,7 @@ main() {
     shift $(($OPTIND - 1))
 
     database_file="$(mktemp)"
+    trap "remove_database_file ${database_file}" EXIT
     query="$1"
     shift
 

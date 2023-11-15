@@ -34,4 +34,7 @@ ENVIRONMENT VARIABLES
 
   SQLITE_CSV_CMD
     sqlite executable, default is sqlite3
+
+  SQLITE_CSV_KEEP_DB
+    if not empty, do not delete sqlite database file
 ```
