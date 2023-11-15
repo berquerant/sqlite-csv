@@ -6,7 +6,7 @@ NAME
   sqlite-csv.sh - sql csv pipeline
 
 SYNOPSIS
-  sqlite-csv.sh [--index-headers] QUERY [FILE]...
+  sqlite-csv.sh [-h] [-c] [-f] [-i] QUERY [FILE]...
 
   QUERY
     query to be executed
@@ -18,8 +18,17 @@ SYNOPSIS
 
 OPTIONS
 
-  --index-headers
+  -c
     rename column names to index (from 0)
+
+  -f
+    rename table names to index (from 0)
+
+  -h
+    show this help
+
+  -i
+    -c and -f
 
 ENVIRONMENT VARIABLES
 

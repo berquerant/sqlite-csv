@@ -6,7 +6,7 @@ NAME
   sqlite-csv.sh - sql csv pipeline
 
 SYNOPSIS
-  sqlite-csv.sh [--index-headers] QUERY [FILE]...
+  sqlite-csv.sh [-h] [-c] [-f] [-i] QUERY [FILE]...
 
   QUERY
     query to be executed
@@ -18,8 +18,17 @@ SYNOPSIS
 
 OPTIONS
 
-  --index-headers
+  -c
     rename column names to index (from 0)
+
+  -f
+    rename table names to index (from 0)
+
+  -h
+    show this help
+
+  -i
+    -c and -f
 
 ENVIRONMENT VARIABLES
 
@@ -82,17 +91,39 @@ rename_columns_to_index() {
         while read line ; do "${SQLITE}" "${database_file}" "${line}" ; done
 }
 
+rename_tablenames_to_index() {
+    database_file="$1"
+    sqlite_csv "${database_file}" "SELECT name FROM sqlite_schema WHERE type = 'table' AND name NOT LIKE 'sqlite_%'" |\
+        awk '{printf("ALTER TABLE \"%s\" RENAME TO \"%s\"\n", $1, NR-1)}' |\
+        while read line ; do "${SQLITE}" "${database_file}" "${line}" ; done
+}
+
 main() {
     if [ $# -lt 2 ] ; then
         usage
         exit 1
     fi
 
+    # parse options
     index_headers=0
-    if [ "$1" = "--index-headers" ] ; then
-        shift
+    index_filenames=0
+    indexes=0
+
+    while getopts "hcfi" OPT ; do
+        case "$OPT" in
+            c) index_headers=1 ;;
+            f) index_filenames=1 ;;
+            i) indexes=1 ;;
+            h) usage
+               exit
+               ;;
+        esac
+    done
+    if [ "${indexes}" = "1" ] ; then
         index_headers=1
+        index_filenames=1
     fi
+    shift $(($OPTIND - 1))
 
     database_file="$(mktemp)"
     query="$1"
@@ -104,6 +135,9 @@ main() {
             rename_columns_to_index "${database_file}" "$(get_tablename $arg)"
         fi
     done
+    if [ "${index_filenames}" = "1" ] ; then
+        rename_tablenames_to_index "${database_file}"
+    fi
 
     run_query "${database_file}" "${query}"
 }

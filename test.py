@@ -95,9 +95,82 @@ class SQLiteCSVTest(unittest.TestCase):
         with data.prepare_data():
             cases = [
                 Case(
+                    name="join stdin and numeric indexes",
+                    args=[
+                        "-i",
+                        "select `0`.`0`, `0`.`2`, `1`.`1` "
+                        "from `0` inner join `1` on `1`.`0` = `0`.`2`",
+                        "-",
+                        data.numeric.filename,
+                    ],
+                    input=data.extensions.data,
+                    want="\n".join(
+                        [
+                            "0,2,1",
+                            "1,10,America",
+                            "2,11,Brazil",
+                            "3,10,America",
+                        ]
+                    ),
+                ),
+                Case(
+                    name="join extensions and numeric indexes",
+                    args=[
+                        "-i",
+                        "select `0`.`0`, `0`.`2`, `1`.`1` "
+                        "from `0` inner join `1` on `1`.`0` = `0`.`2`",
+                        data.extensions.filename,
+                        data.numeric.filename,
+                    ],
+                    want="\n".join(
+                        [
+                            "0,2,1",
+                            "1,10,America",
+                            "2,11,Brazil",
+                            "3,10,America",
+                        ]
+                    ),
+                ),
+                Case(
+                    name="join extensions and numeric indexed headers and filenames",
+                    args=[
+                        "-cf",
+                        "select `0`.`0`, `0`.`2`, `1`.`1` "
+                        "from `0` inner join `1` on `1`.`0` = `0`.`2`",
+                        data.extensions.filename,
+                        data.numeric.filename,
+                    ],
+                    want="\n".join(
+                        [
+                            "0,2,1",
+                            "1,10,America",
+                            "2,11,Brazil",
+                            "3,10,America",
+                        ]
+                    ),
+                ),
+                Case(
+                    name="join extensions and numeric indexed filenames",
+                    args=[
+                        "-f",
+                        "select `0`.`id`, `0`.`address_id`, `1`.`name` "
+                        "from `0` inner join `1` on `1`.`id` = `0`.`address_id`",
+                        data.extensions.filename,
+                        data.numeric.filename,
+                    ],
+                    want="\n".join(
+                        [
+                            "id,address_id,name",
+                            "1,10,America",
+                            "2,11,Brazil",
+                            "3,10,America",
+                        ]
+                    ),
+                ),
+                Case(
                     name="join extensions and numeric index",
                     args=[
-                        "--index-headers",
+                        "-c",
                         "select `ext.json`.`0`, `ext.json`.`2`, `20231212`.`1` "
                         "from `ext.json` inner join `20231212` on `20231212`.`0` = `ext.json`.`2`",
                         data.extensions.filename,
@@ -148,7 +221,7 @@ class SQLiteCSVTest(unittest.TestCase):
                 Case(
                     name="select accounts without header",
                     args=[
-                        "--index-headers",
+                        "-c",
                         "select `1` from accounts",
                         data.account.filename,
                     ],
@@ -164,7 +237,7 @@ class SQLiteCSVTest(unittest.TestCase):
                 Case(
                     name="select accounts all without header",
                     args=[
-                        "--index-headers",
+                        "-c",
                         "select * from accounts",
                         data.account.filename,
                     ],
