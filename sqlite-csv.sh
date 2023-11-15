@@ -77,7 +77,7 @@ run_query() {
 rename_columns_to_index() {
     database_file="$1"
     tablename="$2"
-    sqlite_csv "${database_file}" "PRAGMA table_info(${tablename});" |\
+    sqlite_csv "${database_file}" "PRAGMA table_info(\"${tablename}\");" |\
         awk -F"," -v table="${tablename}" '{printf("ALTER TABLE \"%s\" RENAME COLUMN \"%s\" to \"%s\"\n", table, $2, $1)}' |\
         while read line ; do "${SQLITE}" "${database_file}" "${line}" ; done
 }
